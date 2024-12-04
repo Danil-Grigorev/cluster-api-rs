@@ -1,0 +1,27 @@
+---
+name: Publish
+
+on:
+  # Manually trigger Updatecli via GitHub UI
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+permissions:
+  contents: "write"
+  pull-requests: "write"
+
+jobs:
+  crates_io_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: cargo login
+        run: cargo login ${{ secrets.CRATES_IO_API_TOKEN }}
+
+      - name: cargo publish
+        run: cargo publish --all-features
